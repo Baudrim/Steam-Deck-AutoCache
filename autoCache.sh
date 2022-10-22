@@ -1,5 +1,8 @@
 # A script to automatically move the cache of the steam deck on the sd card only of the game installed on the sd card
 
+#TODO: Better text and color output
+#TODO: easier way to launch the script on the steam deck
+
 # The path to the cache folder
 COMPATDATA_PATH="/home/deck/.steam/steam/steamapps/compatdata"
 SHADERCACHE_PATH="/home/deck/.steam/steam/steamapps/shadercache"
@@ -18,6 +21,7 @@ STEAMAPI_URL="https://api.steampowered.com/ISteamApps/GetAppList/v2/"
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 ORANGE='\033[0;33m'
+BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 declare -i mode=0
@@ -37,83 +41,70 @@ if [ ! -d "$SD_PATH/cache/shadercache" ]; then
     mkdir "$SD_PATH/cache/shadercache"
 fi
 
-#We move the cache to the sd card if the game is on this sd card by finding the game in the steam api with the game id
-for game in "$COMPATDATA_PATH"/*; do
+
+# for game as appmanifest_*.acf
+for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 	mode=0
-	space=0
-	game_id=$(basename "$game")
+	# get the game id
+	game_id=$(basename "$game" | cut -d'_' -f2 | cut -d'.' -f1)
+	# get the game name
 	game_name=$(curl -s "$STEAMAPI_URL" | jq -r ".applist.apps[] | select(.appid == $game_id) | .name")
-	
-	if [ ! "$game_name" = "" ]; then
-			#check if the game is installed on the sd card by looking if the id of the game is in the steamapps folder with the name appmanifest_gameid.acf
-			if [ -f "$STEAMAPPS_PATH/appmanifest_$game_id.acf" ]; then
-			echo "Game $game_name seem to be on the sd card."
-			# check if the game cache is already on the sd card if not move it then create a symbolic link
-			if [ ! -d "$SD_PATH/cache/compatdata/$game_id" ]; then
-				echo -e $GREEN "The compatdata of $game_name can be moved to the sd card" $NC
-					mode+=1
-					space+=$(du -s "$game" | cut -f1)
-			else
-				echo -e $ORANGE "The compatdata of $game_name is already on the sd card" $NC
-			fi			
-			if [ ! -d "$SD_PATH/cache/shadercache/$game_id" ]; then
-				echo -e $GREEN "The shadercache of $game_name can be moved to the sd card" $NC
-				mode+=2
-				space+=$(du -s "$SHADERCACHE_PATH/$game_id" | cut -f1)
-			else
-				echo -e $ORANGE "The shadercache of $game_name is already on the sd card" $NC
-			fi
-			#ask user if he wants to move the cache to the sd card by pressing y or n
-			if [ $mode -gt 0 ]; then
-			#convert the KB to MB
-				spacemb=$(($space/1024))
+	# check if the compatdata and/or shadercache folder is already on the sd card
+	if [ ! -d "$SD_PATH/cache/compatdata/$game_id" ]; then
+		mode+=1
+		space+=$(du -s "$COMPATDATA_PATH/$game_id" | cut -f1)
+	fi
+	if [ ! -d "$SD_PATH/cache/shadercache/$game_id" ]; then
+		mode+=2
+		space+=$(du -s "$SHADERCACHE_PATH/$game_id" | cut -f1)
+	fi
+	spacemb=$(($space/1024))
+	# check if the game actually exist in the compatdata folder and shadercache folder
+	echo -e $NC "The game $game_name is installed on the sd card" $NC
+	# check if cache exist in the internal storage
+	if [ -d "$SHADERCACHE_PATH/$game_id" ] && [ -d "$COMPATDATA_PATH/$game_id" ]; then
+		# if mode is 0 then the cache is already on the sd card
+		if [ $mode -eq 0 ]; then
+			echo -e $BLUE "The cache of $game_name is already on the sd card" $NC
+		else
+		# check if there is enough space on the sd card
+			if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
+				# ask user if he wants to move the cache to the sd card by pressing y or n
 				echo -e $ORANGE "The cache of $game_name will take $spacemb Mb on the sd card" $NC
 				read -p "Do you want to move the cache of $game_name to the sd card? (y/n) " -n 1 -r
 				echo
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
 					case $mode in
-					#check if the sd card has enough space to move the cache 
+					# check if the sd card has enough space to move the cache 
 					1)
-						if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
-							mv "$game" "$SD_PATH/cache/compatdata"
-							ln -s "$SD_PATH/cache/compatdata/$game_id" "$COMPATDATA_PATH"
-							echo -e $GREEN "The compatdata of $game_name has been moved to the sd card" $NC
-						else
-							echo -e $RED "Not enough space on the sd card to move the compatdata of $game_name" $NC
-						fi
+						mv "$COMPATDATA_PATH/$game_id" "$SD_PATH/cache/compatdata/"
+						ln -s "$SD_PATH/cache/compatdata/$game_id" "$COMPATDATA_PATH"
+						echo -e $GREEN "The compatdata of $game_name has been moved to the sd card" $NC
 						;;
 					2)
-						if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
-							mv "$SHADERCACHE_PATH/$game_id" "$SD_PATH/cache/shadercache"
-							ln -s "$SD_PATH/cache/shadercache/$game_id" "$SHADERCACHE_PATH"
-							echo -e $GREEN "The shadercache of $game_name has been moved to the sd card" $NC
-						else
-							echo -e $RED "Not enough space on the sd card to move the shadercache of $game_name" $NC
-						fi
+						mv "$SHADERCACHE_PATH/$game_id" "$SD_PATH/cache/shadercache/"
+						ln -s "$SD_PATH/cache/shadercache/$game_id" "$SHADERCACHE_PATH"
+						echo -e $GREEN "The shadercache of $game_name has been moved to the sd card" $NC
 						;;
 					3)
-						if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
-							mv "$game" "$SD_PATH/cache/compatdata"
-							ln -s "$SD_PATH/cache/compatdata/$game_id" "$COMPATDATA_PATH"
-							mv "$SHADERCACHE_PATH/$game_id" "$SD_PATH/cache/shadercache"
-							ln -s "$SD_PATH/cache/shadercache/$game_id" "$SHADERCACHE_PATH"
-							echo -e $GREEN "The compatdata and shadercache of $game_name has been moved to the sd card" $NC
-						else
-							echo -e $RED "Not enough space on the sd card to move the compatdata and shadercache of $game_name" $NC
-						fi
+						
+						mv "$COMPATDATA_PATH/$game_id" "$SD_PATH/cache/compatdata/"
+						ln -s "$SD_PATH/cache/compatdata/$game_id" "$COMPATDATA_PATH"
+						mv "$SHADERCACHE_PATH/$game_id" "$SD_PATH/cache/shadercache/"
+						ln -s "$SD_PATH/cache/shadercache/$game_id" "$SHADERCACHE_PATH"
+						echo -e $GREEN "The compatdata and shadercache of $game_name has been moved to the sd card" $NC
 						;;
 					esac
 				fi
+			else
+				echo -e $RED "Not enough space on the sd card to move the cache $game_name need $spacemb Mb" $NC
 			fi
-		else
-			echo -e $ORANGE "$game_id have the name $game_name but does not seem to be on the sd card" $NC
 		fi
 	else
-		echo -e $RED "Game ID $game_id not found in the steam api \n" $NC
+		echo -e $RED "$game_name is installed on the sd card but does not seem to have cache..." $NC
 	fi
-	
 	echo -e "\n"
-
-done
+done 
 
 # {"appid":2090220,"name":"OneHanded"}, {"appid":2090300,"name":"Grim Survivor"}, {"appid":1172470, "name":"Apex"}
+
