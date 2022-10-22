@@ -22,6 +22,7 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 ORANGE='\033[0;33m'
 BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
 NC='\033[0m' # No Color
 
 declare -i mode=0
@@ -75,7 +76,6 @@ for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 				echo -e $BLUE "The cache of $game_name is already on the sd card" $NC
 			else
 			# check if there is enough space on the sd card
-				echo "size of the cache: $space and size of the sd card: $(df -B1 $SD_PATH | tail -n 1 | awk '{print $4}')"
 				if [ $space -lt $(df -B1 $SD_PATH | tail -n 1 | awk '{print $4}') ]; then
 					# ask user if he wants to move the cache to the sd card by pressing y or n
 					echo -e $ORANGE "The cache of $game_name will take $spacemb on the sd card" $NC
@@ -110,7 +110,7 @@ for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 			fi
 		fi
 	else
-		echo -e $RED "$game_name is installed on the sd card but does not seem to have cache..." $NC
+		echo -e $PURPLE "$game_name is installed on the sd card but does not seem to have cache..." $NC
 	fi
 	echo -e "\n"
 done 
