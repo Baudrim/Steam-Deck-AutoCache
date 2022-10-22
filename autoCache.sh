@@ -45,8 +45,9 @@ for game in "$COMPATDATA_PATH"/*; do
 	# check if game_name is not empty
 	if [ ! "$game_name" = "" ]; then
 		echo "Game ID $game_id has the name $game_name"
-		if [ -d "$GAME_PATH/$game_name" ]; then
-			echo "Game $game_name is on the sd card"
+		# check if the game is on the sd card part of the name is the same as the folder name
+		if [ -d "$GAME_PATH/*$game_name*" ]; then
+			echo "Game $game_name seem to be on the sd card with the name" $(ls -d $GAME_PATH/*$game_name*) 
 			# check if the game cache is already on the sd card if not move it then create a symbolic link
 			if [ ! -d "$SD_PATH/cache/compatdata/$game_id" ]; then
 				echo -e $GREEN "Moving $game_name compatdata to the sd card and creating a symbolic link" $NC
