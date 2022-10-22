@@ -62,35 +62,43 @@ for game in "$COMPATDATA_PATH"/*; do
 			else
 				echo -e $ORANGE "The shadercache of $game_name is already on the sd card" $NC
 			fi
-			case $mode in
-				#check if the sd card has enough space to move the cache 
-				1)
-					if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
-						mv "$game" "$SD_PATH/cache/compatdata"
-						ln -s "$SD_PATH/cache/compatdata/$game_id" "$COMPATDATA_PATH"
-					else
-						echo -e $RED "Not enough space on the sd card to move the compatdata of $game_name" $NC
-					fi
-					;;
-				2)
-					if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
-						mv "$SHADERCACHE_PATH/$game_id" "$SD_PATH/cache/shadercache"
-						ln -s "$SD_PATH/cache/shadercache/$game_id" "$SHADERCACHE_PATH"
-					else
-						echo -e $RED "Not enough space on the sd card to move the shadercache of $game_name" $NC
-					fi
-					;;
-				3)
-					if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
-						mv "$game" "$SD_PATH/cache/compatdata"
-						ln -s "$SD_PATH/cache/compatdata/$game_id" "$COMPATDATA_PATH"
-						mv "$SHADERCACHE_PATH/$game_id" "$SD_PATH/cache/shadercache"
-						ln -s "$SD_PATH/cache/shadercache/$game_id" "$SHADERCACHE_PATH"
-					else
-						echo -e $RED "Not enough space on the sd card to move the compatdata and shadercache of $game_name" $NC
-					fi
-					;;
-			esac
+			#ask user if he wants to move the cache to the sd card by pressing y or n
+			if [ $mode -gt 0 ]; then
+				echo -e $ORANGE "The cache of $game_name will take $space KB on the sd card" $NC
+				read -p "Do you want to move the cache of $game_name to the sd card? (y/n) " -n 1 -r
+				echo
+				if [[ $REPLY =~ ^[Yy]$ ]]; then
+					case $mode in
+					#check if the sd card has enough space to move the cache 
+					1)
+						if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
+							mv "$game" "$SD_PATH/cache/compatdata"
+							ln -s "$SD_PATH/cache/compatdata/$game_id" "$COMPATDATA_PATH"
+						else
+							echo -e $RED "Not enough space on the sd card to move the compatdata of $game_name" $NC
+						fi
+						;;
+					2)
+						if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
+							mv "$SHADERCACHE_PATH/$game_id" "$SD_PATH/cache/shadercache"
+							ln -s "$SD_PATH/cache/shadercache/$game_id" "$SHADERCACHE_PATH"
+						else
+							echo -e $RED "Not enough space on the sd card to move the shadercache of $game_name" $NC
+						fi
+						;;
+					3)
+						if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
+							mv "$game" "$SD_PATH/cache/compatdata"
+							ln -s "$SD_PATH/cache/compatdata/$game_id" "$COMPATDATA_PATH"
+							mv "$SHADERCACHE_PATH/$game_id" "$SD_PATH/cache/shadercache"
+							ln -s "$SD_PATH/cache/shadercache/$game_id" "$SHADERCACHE_PATH"
+						else
+							echo -e $RED "Not enough space on the sd card to move the compatdata and shadercache of $game_name" $NC
+						fi
+						;;
+					esac
+				fi
+			fi
 		else
 			echo -e $ORANGE "$game_id have the name $game_name but does not seem to be on the sd card" $NC
 		fi
