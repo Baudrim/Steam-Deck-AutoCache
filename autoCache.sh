@@ -42,11 +42,18 @@ for game in "$COMPATDATA_PATH"/*; do
 	space=0
 	game_id=$(basename "$game")
 	game_name=$(curl -s "$STEAMAPI_URL" | jq -r ".applist.apps[] | select(.appid == $game_id) | .name")
-	# check if game_name is not empty
+	game_folder_name=""
+	
 	if [ ! "$game_name" = "" ]; then
 		echo "Game ID $game_id has the name $game_name"
-		# check if the game is on the sd card part of the name is the same as the folder name
-		if [ -d "$GAME_PATH/*$game_name*" ]; then
+		# check if part of the game name is a folder in the sd card
+		for folder in "$GAME_PATH"/*; do
+		if [[ "$folder" == *"$game_name"* ]]; then
+			game_folder_name=$(basename "$folder")
+			break
+		fi
+		done
+		if [ ! "$game_folder_name" = ""  ]; then
 			echo "Game $game_name seem to be on the sd card with the name" $(ls -d $GAME_PATH/*$game_name*) 
 			# check if the game cache is already on the sd card if not move it then create a symbolic link
 			if [ ! -d "$SD_PATH/cache/compatdata/$game_id" ]; then
@@ -103,11 +110,12 @@ for game in "$COMPATDATA_PATH"/*; do
 		else
 			echo -e $ORANGE "$game_id have the name $game_name but does not seem to be on the sd card" $NC
 		fi
-		echo -e "\n"
 	else
 		echo -e $RED "Game ID $game_id not found in the steam api \n" $NC
 	fi
-done
+	
+	echo -e "\n"
 
+done
 
 # {"appid":2090220,"name":"OneHanded"}, {"appid":2090300,"name":"Grim Survivor"}, {"appid":1172470, "name":"Apex"}
