@@ -3,16 +3,16 @@
 #TODO: Better text and color output
 #TODO: easier way to launch the script on the steam deck
 
-# # The path to the cache folder
-# COMPATDATA_PATH="/home/deck/.steam/steam/steamapps/compatdata"
-# SHADERCACHE_PATH="/home/deck/.steam/steam/steamapps/shadercache"
+# The path to the cache folder
+COMPATDATA_PATH="/home/deck/.steam/steam/steamapps/compatdata"
+SHADERCACHE_PATH="/home/deck/.steam/steam/steamapps/shadercache"
 
-# # The path to the sd card and game path
-# SD_PATH="/run/media/"
-# # get the first folder in media, supposed to be the sd card
-# SD_PATH=$(ls -d $SD_PATH*/ | head -n 1)
-# GAME_PATH="$SD_PATH/steamapps/common"
-# STEAMAPPS_PATH="$SD_PATH/steamapps/"
+# The path to the sd card and game path
+SD_PATH="/run/media/"
+# get the first folder in media, supposed to be the sd card
+SD_PATH=$(ls -d $SD_PATH*/ | head -n 1)
+GAME_PATH="$SD_PATH/steamapps/common"
+STEAMAPPS_PATH="$SD_PATH/steamapps/"
 
 # Steam api url
 STEAMAPI_URL="https://api.steampowered.com/ISteamApps/GetAppList/v2/"
