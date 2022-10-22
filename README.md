@@ -1,5 +1,5 @@
 # Steam-Deck-AutoCache
-# ⚠️ Warning, the script has not yet been tested in real conditions ! ⚠️
+# ⚠️ Warning, the script has not yet been tested in real conditions ! The script works for me but bugs are always possible, do not hesitate to send me feedback⚠️
 
 # Introduction
 A small script that allows to automatically move the cache on the SD card but only the caches of the games installed on it which allows to save space on the internal storage without having the problem of not being able to launch the games by changing the SD card,  it is just necessary to restart the script when a new game is installed.
@@ -11,7 +11,7 @@ Then detect the games on the sd card and move the cache related to these games t
 * Right click on empty space where the script is
 * Press "Open Terminal"
 * Write this command: ``` bash ./autoCache.sh ```
-* Now it will find all the game on the steam deck and ask you if you want to move the cache on the sd card by pressing Y or N if the game is on the current sd card.
+* Now it will find all the game on the sd card and ask you if you want to move the cache of these game to the sd card by pressing Y or N
 
 # Next update
 * TODO: Better text and color output *
