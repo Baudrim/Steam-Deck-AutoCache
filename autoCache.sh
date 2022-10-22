@@ -58,7 +58,7 @@ for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 		space+=$(du -sb "$SHADERCACHE_PATH/$game_id" | cut -f1)
 	fi
 	#convert byte  size in human readable format
-	space=$(numfmt --to=iec-i --suffix=B --padding=7 $space)
+	spacemb=$(numfmt --to=iec-i --suffix=B --padding=7 $space)
 	# check if the game actually exist in the compatdata folder and shadercache folder
 	echo -e $NC "The game $game_name is installed on the sd card - Game ID: $game_id" $NC
 	# check if cache exist in the internal storage
