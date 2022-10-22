@@ -58,7 +58,7 @@ for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 		space+=$(du -sb "$SHADERCACHE_PATH/$game_id" | cut -f1)
 	fi
 	#convert byte  size in human readable format
-	spacemb=$(numfmt --to=iec-i --suffix=B --padding=7 $space)
+	spacemb=$(numfmt --to=iec-i --suffix=B  $space)
 	# check if the game actually exist in the compatdata folder and shadercache folder
 	echo -e $NC "The game $game_name is installed on the sd card - Game ID: $game_id" $NC
 	# check if cache exist in the internal storage
@@ -75,7 +75,6 @@ for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 				echo -e $BLUE "The cache of $game_name is already on the sd card" $NC
 			else
 			# check if there is enough space on the sd card
-			#check if the game shader cache is already a symlink
 				if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
 					# ask user if he wants to move the cache to the sd card by pressing y or n
 					echo -e $ORANGE "The cache of $game_name will take $spacemb on the sd card" $NC
@@ -105,7 +104,7 @@ for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 						esac
 					fi
 				else
-					echo -e $RED "Not enough space on the sd card to move the cache $game_name need $spacemb Mb" $NC
+					echo -e $RED "Not enough space on the sd card to move the cache $game_name need $spacemb" $NC
 				fi
 			fi
 		fi
