@@ -9,6 +9,7 @@ SD_PATH="/run/media/"
 # get the first folder in media, supposed to be the sd card
 SD_PATH=$(ls -d $SD_PATH*/ | head -n 1)
 GAME_PATH="$SD_PATH/steamapps/common"
+STEAMAPPS_PATH="$SD_PATH/steamapps/"
 
 # Steam api url
 STEAMAPI_URL="https://api.steampowered.com/ISteamApps/GetAppList/v2/"
@@ -36,35 +37,27 @@ if [ ! -d "$SD_PATH/cache/shadercache" ]; then
     mkdir "$SD_PATH/cache/shadercache"
 fi
 
-#Move the cache to the sd card if the game is on this sd card by finding the game in the steam api with the game id
+#We move the cache to the sd card if the game is on this sd card by finding the game in the steam api with the game id
 for game in "$COMPATDATA_PATH"/*; do
 	mode=0
 	space=0
 	game_id=$(basename "$game")
 	game_name=$(curl -s "$STEAMAPI_URL" | jq -r ".applist.apps[] | select(.appid == $game_id) | .name")
-	game_folder_name=""
 	
 	if [ ! "$game_name" = "" ]; then
-		echo "Game ID $game_id has the name $game_name"
-		# check if part of the game name is a folder in the sd card
-		for folder in "$GAME_PATH"/*; do
-		if [[ "$folder" == *"$game_name"* ]]; then
-			game_folder_name=$(basename "$folder")
-			break
-		fi
-		done
-		if [ ! "$game_folder_name" = ""  ]; then
-			echo "Game $game_name seem to be on the sd card with the name" $(ls -d $GAME_PATH/*$game_name*) 
+			#check if the game is installed on the sd card by looking if the id of the game is in the steamapps folder with the name appmanifest_gameid.acf
+			if [ -f "$STEAMAPPS_PATH/appmanifest_$game_id.acf" ]; then
+			echo "Game $game_name seem to be on the sd card."
 			# check if the game cache is already on the sd card if not move it then create a symbolic link
 			if [ ! -d "$SD_PATH/cache/compatdata/$game_id" ]; then
-				echo -e $GREEN "Moving $game_name compatdata to the sd card and creating a symbolic link" $NC
+				echo -e $GREEN "The compatdata of $game_name can be moved to the sd card" $NC
 					mode+=1
 					space+=$(du -s "$game" | cut -f1)
 			else
 				echo -e $ORANGE "The compatdata of $game_name is already on the sd card" $NC
 			fi			
 			if [ ! -d "$SD_PATH/cache/shadercache/$game_id" ]; then
-				echo -e $GREEN "Moving $game_name shadercache to the sd card and create a symbolic link" $NC
+				echo -e $GREEN "The shadercache of $game_name can be moved to the sd card" $NC
 				mode+=2
 				space+=$(du -s "$SHADERCACHE_PATH/$game_id" | cut -f1)
 			else
