@@ -65,7 +65,9 @@ for game in "$COMPATDATA_PATH"/*; do
 			fi
 			#ask user if he wants to move the cache to the sd card by pressing y or n
 			if [ $mode -gt 0 ]; then
-				echo -e $ORANGE "The cache of $game_name will take $space KB on the sd card" $NC
+			#convert the KB to MB
+				spacemb=$(($space/1024))
+				echo -e $ORANGE "The cache of $game_name will take $spacemb Mb on the sd card" $NC
 				read -p "Do you want to move the cache of $game_name to the sd card? (y/n) " -n 1 -r
 				echo
 				if [[ $REPLY =~ ^[Yy]$ ]]; then
@@ -75,6 +77,7 @@ for game in "$COMPATDATA_PATH"/*; do
 						if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
 							mv "$game" "$SD_PATH/cache/compatdata"
 							ln -s "$SD_PATH/cache/compatdata/$game_id" "$COMPATDATA_PATH"
+							echo -e $GREEN "The compatdata of $game_name has been moved to the sd card" $NC
 						else
 							echo -e $RED "Not enough space on the sd card to move the compatdata of $game_name" $NC
 						fi
@@ -83,6 +86,7 @@ for game in "$COMPATDATA_PATH"/*; do
 						if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
 							mv "$SHADERCACHE_PATH/$game_id" "$SD_PATH/cache/shadercache"
 							ln -s "$SD_PATH/cache/shadercache/$game_id" "$SHADERCACHE_PATH"
+							echo -e $GREEN "The shadercache of $game_name has been moved to the sd card" $NC
 						else
 							echo -e $RED "Not enough space on the sd card to move the shadercache of $game_name" $NC
 						fi
@@ -93,6 +97,7 @@ for game in "$COMPATDATA_PATH"/*; do
 							ln -s "$SD_PATH/cache/compatdata/$game_id" "$COMPATDATA_PATH"
 							mv "$SHADERCACHE_PATH/$game_id" "$SD_PATH/cache/shadercache"
 							ln -s "$SD_PATH/cache/shadercache/$game_id" "$SHADERCACHE_PATH"
+							echo -e $GREEN "The compatdata and shadercache of $game_name has been moved to the sd card" $NC
 						else
 							echo -e $RED "Not enough space on the sd card to move the compatdata and shadercache of $game_name" $NC
 						fi
