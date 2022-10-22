@@ -44,6 +44,7 @@ fi
 # for game as appmanifest_*.acf
 for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 	mode=0
+	space=0
 	# get the game id
 	game_id=$(basename "$game" | cut -d'_' -f2 | cut -d'.' -f1)
 	# get the game name
@@ -64,7 +65,6 @@ for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 	# check if cache exist in the internal storage
 	if [ -d "$SHADERCACHE_PATH/$game_id" ] && [ -d "$COMPATDATA_PATH/$game_id" ]; then
 		# check is the cache is already a symlink in case where user already made the symlink before and somewhere else
-		# if [ -L "$SHADERCACHE_PATH/$game_id" ] || [ -L "$COMPATDATA_PATH/$game_id" ]; then
 		if [ -L "$SHADERCACHE_PATH/$game_id" ] && [ ! -d $SD_PATH/cache/shadercache/$game_id ]; then
 			echo -e $ORANGE "The shadercache of the game $game_name already has a symlink somewhere else..." $NC
 		elif [ -L "$COMPATDATA_PATH/$game_id" ] && [ ! -d $SD_PATH/cache/compatdata/$game_id ]; then
@@ -75,7 +75,8 @@ for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 				echo -e $BLUE "The cache of $game_name is already on the sd card" $NC
 			else
 			# check if there is enough space on the sd card
-				if [ $(df -k "$SD_PATH" | awk 'NR==2 {print $4}') -gt $space ]; then
+				echo "size of the cache: $space and size of the sd card: $(df -B1 $SD_PATH | tail -n 1 | awk '{print $4}')"
+				if [ $space -lt $(df -B1 $SD_PATH | tail -n 1 | awk '{print $4}') ]; then
 					# ask user if he wants to move the cache to the sd card by pressing y or n
 					echo -e $ORANGE "The cache of $game_name will take $spacemb on the sd card" $NC
 					read -p "Do you want to move the cache of $game_name to the sd card? (y/n) " -n 1 -r
