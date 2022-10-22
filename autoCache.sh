@@ -64,8 +64,11 @@ for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
 	# check if cache exist in the internal storage
 	if [ -d "$SHADERCACHE_PATH/$game_id" ] && [ -d "$COMPATDATA_PATH/$game_id" ]; then
 		# check is the cache is already a symlink in case where user already made the symlink before and somewhere else
-		if [ -L "$SHADERCACHE_PATH/$game_id" ] || [ -L "$COMPATDATA_PATH/$game_id" ]; then
-			echo -e $ORANGE "The shadercache and/or compatdata of the game $game_name already has a symlink somewhere else..." $NC
+		# if [ -L "$SHADERCACHE_PATH/$game_id" ] || [ -L "$COMPATDATA_PATH/$game_id" ]; then
+		if [ -L "$SHADERCACHE_PATH/$game_id" ] && [ ! -d $SD_PATH/cache/shadercache/$game_id ]; then
+			echo -e $ORANGE "The shadercache of the game $game_name already has a symlink somewhere else..." $NC
+		elif [ -L "$COMPATDATA_PATH/$game_id" ] && [ ! -d $SD_PATH/cache/compatdata/$game_id ]; then
+			echo -e $ORANGE "The compatdata of the game $game_name already has a symlink somewhere else..." $NC
 		else
 			# if mode is 0 then the cache is already on the sd card
 			if [ $mode -eq 0 ]; then
