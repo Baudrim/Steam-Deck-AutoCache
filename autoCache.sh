@@ -9,7 +9,7 @@ SHADERCACHE_PATH="/home/deck/.steam/steam/steamapps/shadercache"
 
 declare -a DISKS
 DISKS=($(df -h --total | grep media | awk '{print $1, $6, $2, $4}'))
-SD_PATH=$(zenity --list --title="Select the disk" --text="Select the disk where you want to move the cache" --column="Disk" --column="Path" --column="Size" --column="Free space"  --print-column="2" "${DISKS[@]}")
+SD_PATH=$(zenity --list --width=700  --title="Select the disk" --text="Select the disk where you want to move the cache" --column="Disk" --column="Path" --column="Size" --column="Free space"  --print-column="2" "${DISKS[@]}")
 clear
 printf "You selected: |%s| \n" "$SD_PATH"
 # Check if the sd card has a steamapps folder
