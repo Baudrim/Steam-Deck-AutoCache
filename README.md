@@ -18,10 +18,11 @@ Then detect the games on the sd card and move the cache related to these games t
 
 
 
-
-
 # IF THE EXECUTABLE NOT WORKING YOU CAN TRY IT THIS WAY
 * Right click on empty space where the script is
 * Press "Open Terminal"
 * Write this command: ``` bash ./autoCache.sh ```
 * Now it will find all the game on the sd card and ask you if you want to move the cache of these game to the sd card by pressing Y or N
+
+# MORE INFO
+_Note that in some cases, the performance of the game can be reduced. That's why I will release soon on the same repo a "autoCache_uninstall.sh" which will allow you to move the cache of the games you want in the internal memory again_
