@@ -8,12 +8,20 @@ This will create a cache folder on the root of the sd card containing compatdata
 Then detect the games on the sd card and move the cache related to these games to the sd card. A symbolic link is generated in the internal storage. And voila !
 
 # USAGE
+![Peek 2022-12-02 04-56](https://user-images.githubusercontent.com/46636715/205211904-0893f26f-1cd0-4800-af8e-1932e3f17ec3.gif)
+* Right click on the autoCache.sh file
+* Click "Properties" -> Permissions -> check the "Is executable"
+* Double-click the autoCache.sh file
+* Select the drive where you want to move their corresponding game cache
+* Select the game you want to move cache to the selected drive
+* Wait, a result page will appear, you can close it whenever you want ! GG ! :)
+
+
+
+
+
+# IF THE EXECUTABLE NOT WORKING YOU CAN TRY IT THIS WAY
 * Right click on empty space where the script is
 * Press "Open Terminal"
 * Write this command: ``` bash ./autoCache.sh ```
 * Now it will find all the game on the sd card and ask you if you want to move the cache of these game to the sd card by pressing Y or N
-
-# Next update
-* TODO: Better text and color output *
-* TODO: easier way to launch the script on the steam deck *
-
