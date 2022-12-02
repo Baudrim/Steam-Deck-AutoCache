@@ -18,7 +18,7 @@ Then detect the games on the sd card and move the cache related to these games t
 
 
 
-# IF THE EXECUTABLE NOT WORKING YOU CAN TRY IT THIS WAY
+# IF THE EXECUTABLES DOES NOT WORK YOU CAN TRY THIS WAY
 * Right click on empty space where the script is
 * Press "Open Terminal"
 * Write this command: ``` bash ./autoCache.sh ```
