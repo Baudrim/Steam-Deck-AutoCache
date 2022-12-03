@@ -38,7 +38,7 @@ if [ ! -d "$SD_PATH/steamapps" ]; then
 			exit 1
         else
             #Check that the folder is not on the internal drive
-            if [ "$SD_PATH" == "/home/deck/.steam/steam/steamapps" ]; then
+            if [ "$SD_PATH" == "/home/deck/.steam/steam" ]; then
                 zenity --error --width=700 --title="Bad path" --text="The steamapps folder you selected is on the internal drive. Please select a steamapps folder on an external drive."
                 exit 1
             fi
