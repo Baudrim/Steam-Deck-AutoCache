@@ -15,7 +15,7 @@ SHADERCACHE_PATH="/home/deck/.steam/steam/steamapps/shadercache"
 # Now get the SD card path
 declare -a DISKS
 DISKS=($(df -h --total | grep media | awk '{print $1, $6, $2, $4}'))
-SD_PATH=$(zenity --list --width=700  --title="Select the disk" --text="Select the disk where you want to move the cache" --column="Disk" --column="Path" --column="Size" --column="Free space"  --print-column="2" "${DISKS[@]}")
+SD_PATH=$(zenity --list --width=700 --height=200 --title="Select the disk" --text="Select the disk where you want to move the cache" --column="Disk" --column="Path" --column="Size" --column="Free space"  --print-column="2" "${DISKS[@]}")
 clear
 printf "You selected: |%s| \n" "$SD_PATH"
 if [ ! -d "$SD_PATH/steamapps" ]; then
@@ -34,19 +34,20 @@ if [ ! -d "$SD_PATH/steamapps" ]; then
 		clear
 		printf "You selected: %s \n" "$SD_PATH"
 		if [ ! -d "$SD_PATH/steamapps" ]; then
-			zenity --error --title="Steamapps folder missing" --text="The steamapps folder is missing on the sd card."
+			zenity --error --width=700 --title="Steamapps folder missing" --text="The steamapps folder is missing on the sd card."
 			exit 1
 		fi
 	else
 		clear
-		zenity --error --title="No folder selected" --text="You didn't select a folder, exiting."
+		zenity --error --width=700 --title="No folder selected" --text="You didn't select a folder, exiting."
 		exit 1
 	fi
 fi
 GAME_PATH="$SD_PATH/steamapps/common"
 STEAMAPPS_PATH="$SD_PATH/steamapps/"
-if [ ! "$(ls -A $STEAMAPPS_PATH)" ]; then
-	zenity --error --title="Steamapps folder empty" --text="The steamapps folder is empty on the sd card."
+
+if [ -z "$(ls -A $STEAMAPPS_PATH)" ]; then
+	zenity --error --width=700 --title="Steamapps folder empty" --text="The steamapps folder seem to be empty or no right to access it."
 	exit 1
 fi
 
@@ -84,8 +85,12 @@ for game in "$STEAMAPPS_PATH"/appmanifest_*.acf; do
     fi
 done
 
+if [ ${#GAMES[@]} -eq 0 ]; then
+    zenity --info --width=700 --title="No game to move" --text="There is no game to move"
+    exit 0
+fi
 #zenity prompt user to choose the games cache to move
-GAMES_CHOSEN=$(zenity --list --width=700 --height=500 --title="Select the games" --text="Choose the games you want to move the cache in the selected disk (They are all games installed on this same disk)" --column="Move?" --column="Appid" --column="Game" --column="Cache size" --checklist --print-column="2" "${GAMES[@]}" --separator=" ")
+GAMES_CHOSEN=$(zenity --list --width=700 --height=500 --title="Select the games" --text="These games were found on the selected external drive and have their cache on the internal storage. Select them to move their cache to the selected drive" --column="Move?" --column="Appid" --column="Game" --column="Cache size" --checklist --print-column="2" "${GAMES[@]}" --separator=" ")
 clear
 GAMES_CHOSEN=($GAMES_CHOSEN)
 LOCAL_SPACE=$(df -BM --total "/home/deck" | grep total | awk '{print $4}' | sed 's/M//g')
