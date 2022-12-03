@@ -37,6 +37,13 @@ if [ ! -d "$SD_PATH/steamapps" ]; then
 			zenity --error --width=700 --title="Steamapps folder missing" --text="The steamapps folder is missing on the sd card."
 			exit 1
 		fi
+        else
+            #Check that the folder is not on the internal drive
+            if [ "$SD_PATH" == "/home/deck/.steam/steam/steamapps" ]; then
+                zenity --error --width=700 --title="Bad path" --text="The steamapps folder you selected is on the internal drive. Please select a steamapps folder on an external drive."
+                exit 1
+            fi
+        fi
 	else
 		clear
 		zenity --error --width=700 --title="No folder selected" --text="You didn't select a folder, exiting."
@@ -96,7 +103,7 @@ GAMES_CHOSEN=($GAMES_CHOSEN)
 LOCAL_SPACE=$(df -BM --total "/home/deck" | grep total | awk '{print $4}' | sed 's/M//g')
 
 if [ -z "$GAMES_CHOSEN" ]; then
-    zenity --error --title="No games selected" --text="You didn't select any games."
+    zenity --error --title="No games selected" --width=700 --text="You didn't select any games."
     exit 1
 else
     (
