@@ -36,7 +36,6 @@ if [ ! -d "$SD_PATH/steamapps" ]; then
 		if [ ! -d "$SD_PATH/steamapps" ]; then
 			zenity --error --width=700 --title="Steamapps folder missing" --text="The steamapps folder is missing on the sd card."
 			exit 1
-		fi
         else
             #Check that the folder is not on the internal drive
             if [ "$SD_PATH" == "/home/deck/.steam/steam/steamapps" ]; then
